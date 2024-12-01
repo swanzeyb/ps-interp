@@ -1,5 +1,4 @@
 import Stack from './Stack'
-import '@bun/types'
 
 export default class PostScriptInterpreter {
   private scoping: 'dynamic' | 'static'
