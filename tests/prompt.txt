@@ -1,0 +1,9 @@
+I am making this post script interpreter in JavaScript using Bun and Bun Tests. Help me write TDD tests for the requirements outlined in the attached document.
+Write a test for each requirements for Stack Manipulation
+Write a test for each requirements for Arithmetic Operations
+Write a test for each requirements for Dictionary Operations
+Write a test for each requirements for String Operations
+Write a test for each requirements for Boolean Operations
+Write a test for each requirements for Flow Control
+Write a test for each requirements for Input/Output Operations
+Write a test for each requirements for Scoping
