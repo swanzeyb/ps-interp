@@ -1,3 +1,4 @@
+Used ChatGPT 4o w/ these prompts:
 I am making this post script interpreter in JavaScript using Bun and Bun Tests. Help me write TDD tests for the requirements outlined in the attached document.
 Write a test for each requirements for Stack Manipulation
 Write a test for each requirements for Arithmetic Operations
