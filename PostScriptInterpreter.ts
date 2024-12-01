@@ -6,6 +6,10 @@ export default class PostScriptInterpreter {
   private operand_stack: Stack
   private dictionary_stack: Stack
 
+  ///
+  /// Start: Public API
+  ///
+
   constructor({ scoping }: { scoping: 'dynamic' | 'static' }) {
     this.scoping = scoping
     this.operand_stack = new Stack()
@@ -32,13 +36,108 @@ export default class PostScriptInterpreter {
     this.scoping = scoping
   }
 
-  register_operator(name: string, operator: Function) {
+  async repl() {
+    const prompt = 'REPL> '
+    process.stdout.write(prompt)
+    for await (const line of console) {
+      const normal = line.toLowerCase().trim()
+
+      // Quit
+      if (normal === 'quit') {
+        break
+      }
+
+      // Process input
+      this.process_input(normal)
+
+      // Debug print stack
+      this.operand_stack.print()
+
+      // Next prompt
+      process.stdout.write(prompt)
+    }
+  }
+
+  ///
+  /// End: Public API
+  ///
+  /// Start: Private API
+
+  private process_boolean(value: string) {
+    if (value === 'true') {
+      return [true, true]
+    } else if (value === 'false') {
+      return [true, false]
+    } else {
+      return false
+    }
+  }
+
+  private process_number(value: string) {
+    const result = Number(value)
+    if (isNaN(result)) {
+      return false
+    } else {
+      return [true, result]
+    }
+  }
+
+  private process_code_block(value: string) {
+    if (value.length >= 2 && value.at(0) === '{' && value.at(-1) === '}') {
+      // broken, probably should push the stuff inside of value.slice
+      return [true, value.slice(1, -1)]
+    } else {
+      return false
+    }
+  }
+
+  private process_name_constant(value: string) {
+    if (value.at(0) === '/') {
+      return [true, value]
+    } else {
+      return false
+    }
+  }
+
+  private process_constants(input: string) {
+    return (
+      this.process_boolean(input) ||
+      this.process_number(input) ||
+      this.process_code_block(input) ||
+      this.process_name_constant(input)
+    )
+  }
+
+  private lookup_in_dictionary(input: string) {
+    const top_dict = this.dictionary_stack.peek()
+    if (top_dict[input]) {
+      const value = top_dict[input]
+
+      if (typeof value === 'function') {
+        value()
+      } else {
+        this.operand_stack.push(value)
+      }
+    }
+  }
+
+  private process_input(input: string) {
+    const result = this.process_constants(input)
+    if (result) {
+      this.operand_stack.push(result[1])
+    } else {
+      this.lookup_in_dictionary(input)
+    }
+  }
+
+  private register_operator(name: string, operator: Function) {
     this.dictionary_stack.peek()[name] = operator
   }
 
   ///
-  /// Start: Operators
+  /// End: Private API
   ///
+  /// Start: Operators
 
   add_operation() {
     if (this.operand_stack.size() >= 2) {
@@ -70,25 +169,7 @@ export default class PostScriptInterpreter {
     }
   }
 
-  async repl() {
-    const prompt = 'REPL> '
-    process.stdout.write(prompt)
-    for await (const line of console) {
-      const normal = line.toLowerCase().trim()
-
-      // Quit
-      if (normal === 'quit') {
-        break
-      }
-
-      // Process input
-      this.process_input(normal)
-
-      // Debug print stack
-      this.operand_stack.print()
-
-      // Next prompt
-      process.stdout.write(prompt)
-    }
-  }
+  ///
+  /// End: Operators
+  ///
 }
