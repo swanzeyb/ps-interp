@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test'
-import PostScriptInterpreter from './PostScriptInterpreter'
+import PostScriptInterpreter from '../PostScriptInterpreter'
 
 describe('Input/Output Operations', () => {
   test('print: should print the top element of the stack', () => {

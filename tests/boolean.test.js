@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test'
-import PostScriptInterpreter from './PostScriptInterpreter'
+import PostScriptInterpreter from '../PostScriptInterpreter'
 
 describe('Boolean Operations', () => {
   test('eq: should push true if the top two elements are equal, false otherwise', () => {

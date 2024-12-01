@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test'
-import PostScriptInterpreter from './PostScriptInterpreter'
+import PostScriptInterpreter from '../PostScriptInterpreter'
 
 describe('Flow Control Operations', () => {
   test('if: should execute the block if the condition is true', () => {

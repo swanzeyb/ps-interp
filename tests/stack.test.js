@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test'
-import PostScriptInterpreter from './PostScriptInterpreter'
+import PostScriptInterpreter from '../PostScriptInterpreter'
 
 describe('Stack Manipulation Commands', () => {
   test('exch: should swap the top two elements of the stack', () => {

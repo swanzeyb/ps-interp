@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test'
-import PostScriptInterpreter from './PostScriptInterpreter'
+import PostScriptInterpreter from '../PostScriptInterpreter'
 
 describe('String Operations', () => {
   test('length: should push the length of a string onto the stack', () => {
