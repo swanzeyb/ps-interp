@@ -9,7 +9,9 @@ export default class PostScriptInterpreter {
   /// Start: Public API
   ///
 
-  constructor({ scoping }: { scoping: 'dynamic' | 'static' }) {
+  constructor(
+    { scoping }: { scoping: 'dynamic' | 'static' } = { scoping: 'static' }
+  ) {
     this.scoping = scoping
     this.operand_stack = new Stack()
     this.dictionary_stack = new Stack()
@@ -19,16 +21,22 @@ export default class PostScriptInterpreter {
     this.register_operator('def', this.def_operation)
   }
 
-  execute() {
+  execute(input: string) {
     if (this.scoping === 'dynamic') {
       // dynamic scoping
     } else {
       // static scoping
     }
+
+    this.process_input(input)
   }
 
   set stack(stack: any[]) {
     this.operand_stack.stack = stack
+  }
+
+  get stack() {
+    return this.operand_stack.stack
   }
 
   setScoping(scoping: 'dynamic' | 'static') {
