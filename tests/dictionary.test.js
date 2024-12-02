@@ -36,6 +36,7 @@ describe('Dictionary Operations', () => {
   test('def: should define a new key-value pair in the current dictionary', () => {
     const interpreter = new PostScriptInterpreter()
     interpreter.execute('/key 42 def')
+    interpreter.execute('/key 42 def')
     expect(interpreter.current_scope()['key']).toEqual(42)
   })
 })

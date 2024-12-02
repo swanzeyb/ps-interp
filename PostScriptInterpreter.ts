@@ -187,7 +187,7 @@ export default class PostScriptInterpreter {
   }
 
   private process_name_constant(value: TokenStream) {
-    if (value.peek() === '/') {
+    if (value.peek().at(0) === '/') {
       return [true, value.advance()]
     } else {
       return false
