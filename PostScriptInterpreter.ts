@@ -22,6 +22,7 @@ export default class PostScriptInterpreter {
     this.register_operator('sub', this.sub_operation.bind(this))
     this.register_operator('mul', this.mul_operation.bind(this))
     this.register_operator('div', this.div_operation.bind(this))
+    this.register_operator('mod', this.mod_operation.bind(this))
   }
 
   execute(input: string) {
@@ -150,6 +151,17 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  mod_operation() {
+    if (this.operand_stack.size() >= 2) {
+      const op1 = this.operand_stack.pop()
+      const op2 = this.operand_stack.pop()
+      const result = op2 % op1
+      this.operand_stack.push(result)
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
 
   div_operation() {
     if (this.operand_stack.size() >= 2) {
