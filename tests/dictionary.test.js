@@ -20,9 +20,10 @@ describe('Dictionary Operations', () => {
 
   test('begin: should push a dictionary to the execution context', () => {
     const interpreter = new PostScriptInterpreter()
-    interpreter.stack = [{}]
+    const new_dict = {}
+    interpreter.stack = [new_dict]
     interpreter.execute('begin')
-    expect(interpreter.current_scope()).toBe(interpreter.stack[0])
+    expect(interpreter.current_scope()).toBe(new_dict)
   })
 
   test('end: should remove the top dictionary from the execution context', () => {
