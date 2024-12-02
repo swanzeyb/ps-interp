@@ -1,15 +1,35 @@
-import { describe, test, expect } from 'bun:test'
+import {
+  describe,
+  test,
+  expect,
+  beforeAll,
+  afterAll,
+  beforeEach,
+} from 'bun:test'
 import PostScriptInterpreter from '../PostScriptInterpreter'
 
 describe('Input/Output Operations', () => {
+  const output = console.log
+  let outputData = ''
+
+  beforeEach(() => {
+    outputData = ''
+  })
+
+  beforeAll(() => {
+    console.log = (text) => (outputData += text)
+  })
+
+  afterAll(() => {
+    console.log = output
+  })
+
   test('print: should print the top element of the stack', () => {
     const interpreter = new PostScriptInterpreter()
-    let output = ''
-    interpreter.outputCallback = (text) => (output += text) // Mock printing
-    interpreter.stack = ['Hello, world!']
+    interpreter.stack = ['(Hello, world!)']
     interpreter.execute('print')
-    expect(output).toBe('Hello, world!')
-    expect(interpreter.stack).toEqual([]) // Optionally clear the stack after print
+    expect(outputData).toBe('Hello, world!')
+    expect(interpreter.stack).toEqual([])
   })
 
   test('=: should print the top element of the stack and remove it', () => {

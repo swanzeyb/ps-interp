@@ -41,6 +41,7 @@ export default class PostScriptInterpreter {
     this.register_operator('dup', this.dup_operation.bind(this))
     this.register_operator('for', this.for_operation.bind(this))
     this.register_operator('repeat', this.repeat_operation.bind(this))
+    this.register_operator('print', this.print_operation.bind(this))
   }
 
   execute(input: string) {
@@ -114,28 +115,60 @@ export default class PostScriptInterpreter {
     }
   }
 
+  private process_string(value: TokenStream) {
+    if (value.peek().at(0) === '(') {
+      let str = ''
+      let lhs = 0
+      let rhs = 0
+
+      // Look for closing string bracket
+      for (const token of value.next()) {
+        for (const char of token.split('')) {
+          str += char
+          if (char === '(') {
+            lhs++
+          } else if (char === ')') {
+            rhs++
+          }
+
+          if (lhs === rhs) {
+            break
+          }
+        }
+        str += ' '
+      }
+      str = str.trim()
+
+      return [true, str]
+    } else {
+      return false
+    }
+  }
+
   private process_code_block(value: TokenStream) {
-    if (value.peek() === '{') {
+    if (value.peek().at(0) === '{') {
       // Capture the code block as string
       let block = ''
       let lhs = 0
       let rhs = 0
 
+      // Look for closing code block bracket
       for (const token of value.next()) {
-        block += token + ' '
-        if (token === '{') {
-          lhs++
-        } else if (token === '}') {
-          rhs++
-        }
+        for (const char of token.split('')) {
+          block += char
+          if (char === '{') {
+            lhs++
+          } else if (char === '}') {
+            rhs++
+          }
 
-        if (lhs === rhs) {
-          break
+          if (lhs === rhs) {
+            break
+          }
         }
+        block += ' '
       }
-
-      // Exclude outer brackets so next execution can process it
-      block = block.trim().slice(1, -1).trim()
+      block = block.trim()
 
       return [true, block]
     } else {
@@ -155,6 +188,7 @@ export default class PostScriptInterpreter {
     return (
       this.process_boolean(input) ||
       this.process_number(input) ||
+      this.process_string(input) ||
       this.process_code_block(input) ||
       this.process_name_constant(input)
     )
@@ -195,10 +229,34 @@ export default class PostScriptInterpreter {
     this.dictionary_stack.peek()[name] = operator
   }
 
+  private strip_enclosure(value: string, open = '{', close = '}') {
+    if (value.at(0) === open && value.at(-1) === close) {
+      return value.slice(1, -1)
+    } else {
+      return value
+    }
+  }
+
   ///
   /// End: Private API
   ///
   /// Start: Operators
+
+  print_operation() {
+    if (this.operand_stack.size() >= 1) {
+      const value = this.operand_stack.pop()
+
+      if (typeof value === 'object') {
+        console.log(JSON.stringify(value, null, 2))
+      } else if (value.at(0) === '(' && value.at(-1) === ')') {
+        console.log(this.strip_enclosure(value, '(', ')'))
+      } else {
+        console.log(value)
+      }
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
 
   repeat_operation() {
     if (this.operand_stack.size() >= 2) {
@@ -206,7 +264,7 @@ export default class PostScriptInterpreter {
       const count = this.operand_stack.pop()
 
       for (let i = 0; i < count; i++) {
-        this.execute(code_block)
+        this.execute(this.strip_enclosure(code_block))
       }
     } else {
       console.log('Not enough operands.')
@@ -222,7 +280,7 @@ export default class PostScriptInterpreter {
 
       for (let i = start; i <= end; i += increment) {
         this.operand_stack.push(i)
-        this.execute(code_block)
+        this.execute(this.strip_enclosure(code_block))
       }
     } else {
       console.log('Not enough operands.')
@@ -245,9 +303,9 @@ export default class PostScriptInterpreter {
       const condition = this.operand_stack.pop()
 
       if (condition) {
-        this.execute(if_block)
+        this.execute(this.strip_enclosure(if_block))
       } else {
-        this.execute(else_block)
+        this.execute(this.strip_enclosure(else_block))
       }
     } else {
       console.log('Not enough operands.')
@@ -260,7 +318,7 @@ export default class PostScriptInterpreter {
       const condition = this.operand_stack.pop()
 
       if (condition) {
-        this.execute(code_block)
+        this.execute(this.strip_enclosure(code_block))
       }
     } else {
       console.log('Not enough operands.')
