@@ -37,6 +37,7 @@ export default class PostScriptInterpreter {
     this.register_operator('end', this.end_operation.bind(this))
     this.register_operator('length', this.length_operation.bind(this))
     this.register_operator('if', this.if_operation.bind(this))
+    this.register_operator('ifelse', this.if_else_operation.bind(this))
   }
 
   execute(input: string) {
@@ -195,6 +196,22 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  if_else_operation() {
+    if (this.operand_stack.size() >= 3) {
+      const else_block = this.operand_stack.pop()
+      const if_block = this.operand_stack.pop()
+      const condition = this.operand_stack.pop()
+
+      if (condition) {
+        this.execute(if_block)
+      } else {
+        this.execute(else_block)
+      }
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
 
   if_operation() {
     if (this.operand_stack.size() >= 2) {
