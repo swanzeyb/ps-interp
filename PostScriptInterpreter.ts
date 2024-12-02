@@ -46,6 +46,7 @@ export default class PostScriptInterpreter {
     this.register_operator('==', this.pretty_print_operation.bind(this))
     this.register_operator('exch', this.exch_operation.bind(this))
     this.register_operator('pop', this.pop_operation.bind(this))
+    this.register_operator('clear', this.clear_operation.bind(this))
   }
 
   execute(input: string) {
@@ -245,6 +246,10 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  clear_operation() {
+    this.operand_stack.stack = []
+  }
 
   pop_operation() {
     if (this.operand_stack.size() >= 1) {
