@@ -42,11 +42,9 @@ describe('Input/Output Operations', () => {
 
   test('== should print the top element of the stack in a human-readable format', () => {
     const interpreter = new PostScriptInterpreter()
-    let output = ''
-    interpreter.outputCallback = (text) => (output += text) // Mock printing
     interpreter.stack = [{ key: 'value' }]
     interpreter.execute('==')
-    expect(output).toBe('{key: value}')
+    expect(outputData).toBe('{\n  "key": "value"\n}')
     expect(interpreter.stack).toEqual([])
   })
 })

@@ -43,6 +43,7 @@ export default class PostScriptInterpreter {
     this.register_operator('repeat', this.repeat_operation.bind(this))
     this.register_operator('print', this.print_operation.bind(this))
     this.register_operator('=', this.pop_print_operation.bind(this))
+    this.register_operator('==', this.pretty_print_operation.bind(this))
   }
 
   execute(input: string) {
@@ -242,6 +243,15 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  pretty_print_operation() {
+    if (this.operand_stack.size() >= 1) {
+      const value = this.operand_stack.pop()
+      console.log(JSON.stringify(value, null, 2))
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
 
   pop_print_operation() {
     if (this.operand_stack.size() >= 1) {
