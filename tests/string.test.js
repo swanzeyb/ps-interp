@@ -11,22 +11,22 @@ describe('String Operations', () => {
 
   test('get: should push the character at the specified index onto the stack', () => {
     const interpreter = new PostScriptInterpreter()
-    interpreter.stack = ['hello', 1]
+    interpreter.stack = ['(hello)', 1]
     interpreter.execute('get')
-    expect(interpreter.stack).toEqual(['e'])
+    expect(interpreter.stack).toEqual(['(e)'])
   })
 
   test('getinterval: should push a substring onto the stack', () => {
     const interpreter = new PostScriptInterpreter()
-    interpreter.stack = ['hello', 1, 3]
+    interpreter.stack = ['(hello)', 1, 3]
     interpreter.execute('getinterval')
-    expect(interpreter.stack).toEqual(['ell'])
+    expect(interpreter.stack).toEqual(['(ell)'])
   })
 
   test('putinterval: should replace a substring in the original string', () => {
     const interpreter = new PostScriptInterpreter()
-    interpreter.stack = ['hello', 1, 'abc']
+    interpreter.stack = ['(hello)', 1, '(abc)']
     interpreter.execute('putinterval')
-    expect(interpreter.stack).toEqual(['habco'])
+    expect(interpreter.stack).toEqual(['(habco)'])
   })
 })

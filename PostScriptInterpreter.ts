@@ -51,6 +51,7 @@ export default class PostScriptInterpreter {
     this.register_operator('count', this.count_operation.bind(this))
     this.register_operator('get', this.get_operator.bind(this))
     this.register_operator('getinterval', this.getinterval_operation.bind(this))
+    this.register_operator('putinterval', this.putinterval_operation.bind(this))
   }
 
   execute(input: string) {
@@ -251,18 +252,40 @@ export default class PostScriptInterpreter {
   ///
   /// Start: Operators
 
+  putinterval_operation() {
+    if (this.operand_stack.size() >= 3) {
+      const substr = this.strip_enclosure(this.operand_stack.pop(), '(', ')')
+      const index = this.operand_stack.pop()
+      const str = this.strip_enclosure(this.operand_stack.pop(), '(', ')')
+
+      if (
+        typeof str === 'string' &&
+        typeof index === 'number' &&
+        typeof substr === 'string'
+      ) {
+        this.operand_stack.push(
+          `(${str.slice(0, index) + substr + str.slice(index + substr.length)})`
+        )
+      } else {
+        console.log('Invalid operand.')
+      }
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
+
   getinterval_operation() {
     if (this.operand_stack.size() >= 3) {
       const count = this.operand_stack.pop()
       const index = this.operand_stack.pop()
-      const str = this.operand_stack.pop()
+      const str = this.strip_enclosure(this.operand_stack.pop(), '(', ')')
 
       if (
         typeof str === 'string' &&
         typeof index === 'number' &&
         typeof count === 'number'
       ) {
-        this.operand_stack.push(str.slice(index, index + count))
+        this.operand_stack.push(`(${str.slice(index, index + count)})`)
       } else {
         console.log('Invalid operand.')
       }
@@ -274,10 +297,10 @@ export default class PostScriptInterpreter {
   get_operator() {
     if (this.operand_stack.size() >= 2) {
       const index = this.operand_stack.pop()
-      const str = this.operand_stack.pop()
+      const str = this.strip_enclosure(this.operand_stack.pop(), '(', ')')
 
       if (typeof str === 'string' && typeof index === 'number') {
-        this.operand_stack.push(str.at(index))
+        this.operand_stack.push(`(${str.at(index)})`)
       } else {
         console.log('Invalid operand.')
       }
