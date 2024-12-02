@@ -38,6 +38,7 @@ export default class PostScriptInterpreter {
     this.register_operator('length', this.length_operation.bind(this))
     this.register_operator('if', this.if_operation.bind(this))
     this.register_operator('ifelse', this.if_else_operation.bind(this))
+    this.register_operator('dup', this.dup_operation.bind(this))
   }
 
   execute(input: string) {
@@ -196,6 +197,15 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  dup_operation() {
+    if (this.operand_stack.size() >= 1) {
+      const value = this.operand_stack.peek()
+      this.operand_stack.push(value)
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
 
   if_else_operation() {
     if (this.operand_stack.size() >= 3) {
