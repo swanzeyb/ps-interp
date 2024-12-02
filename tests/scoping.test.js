@@ -30,11 +30,11 @@ describe('Scoping Operations', () => {
   test('Toggle scoping: should allow switching between dynamic and lexical scoping', () => {
     const interpreter = new PostScriptInterpreter()
     interpreter.execute('10 /x def')
-    interpreter.setScoping('dynamic')
+    interpreter.set_scoping('dynamic')
     interpreter.execute('5 dict begin 20 /x def x')
     expect(interpreter.stack).toEqual([20]) // Dynamic scoping
 
-    interpreter.setScoping('lexical')
+    interpreter.set_scoping('lexical')
     interpreter.execute('10 /x def 5 dict begin 20 /x def x')
     expect(interpreter.stack).toEqual([10]) // Lexical scoping
   })

@@ -22,20 +22,20 @@ describe('Dictionary Operations', () => {
     const interpreter = new PostScriptInterpreter()
     interpreter.stack = [{}]
     interpreter.execute('begin')
-    expect(interpreter.currentScope()).toBe(interpreter.stack[0])
+    expect(interpreter.current_scope()).toBe(interpreter.stack[0])
   })
 
   test('end: should remove the top dictionary from the execution context', () => {
     const interpreter = new PostScriptInterpreter()
     interpreter.execute('5 dict begin')
-    expect(interpreter.currentScope()).toBeInstanceOf(Object)
+    expect(interpreter.current_scope()).toBeInstanceOf(Object)
     interpreter.execute('end')
-    expect(interpreter.currentScope()).not.toBeInstanceOf(Object)
+    expect(interpreter.current_scope()).not.toBeInstanceOf(Object)
   })
 
   test('def: should define a new key-value pair in the current dictionary', () => {
     const interpreter = new PostScriptInterpreter()
     interpreter.execute('/key 42 def')
-    expect(interpreter.currentScope()['key']).toEqual(42)
+    expect(interpreter.current_scope()['key']).toEqual(42)
   })
 })

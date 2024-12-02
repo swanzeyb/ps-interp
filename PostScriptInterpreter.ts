@@ -50,8 +50,12 @@ export default class PostScriptInterpreter {
     return this.operand_stack.stack
   }
 
-  setScoping(scoping: 'dynamic' | 'static') {
+  set_scoping(scoping: 'dynamic' | 'static') {
     this.scoping = scoping
+  }
+
+  current_scope() {
+    return this.dictionary_stack.peek()
   }
 
   async repl() {
