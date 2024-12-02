@@ -392,7 +392,7 @@ export default class PostScriptInterpreter {
     if (this.operand_stack.size() >= 1) {
       const value = this.operand_stack.pop()
       if (typeof value === 'string') {
-        this.operand_stack.push(value.length)
+        this.operand_stack.push(value.length - 2)
       } else if (typeof value === 'object') {
         this.operand_stack.push(Object.keys(value).length - 1)
       } else {

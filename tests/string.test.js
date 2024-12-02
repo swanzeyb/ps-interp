@@ -4,9 +4,9 @@ import PostScriptInterpreter from '../PostScriptInterpreter'
 describe('String Operations', () => {
   test('length: should push the length of a string onto the stack', () => {
     const interpreter = new PostScriptInterpreter()
-    interpreter.stack = ['hello']
+    interpreter.stack = ['(hello)']
     interpreter.execute('length')
-    expect(interpreter.stack).toEqual(['hello', 5])
+    expect(interpreter.stack).toEqual([5])
   })
 
   test('get: should push the character at the specified index onto the stack', () => {
