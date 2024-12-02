@@ -32,17 +32,15 @@ describe('Input/Output Operations', () => {
     expect(interpreter.stack).toEqual([])
   })
 
-  test('=: should print the top element of the stack and remove it', () => {
+  test('= should print the top element of the stack and remove it', () => {
     const interpreter = new PostScriptInterpreter()
-    let output = ''
-    interpreter.outputCallback = (text) => (output += text) // Mock printing
     interpreter.stack = [42]
     interpreter.execute('=')
-    expect(output).toBe('42')
+    expect(outputData).toBe('42')
     expect(interpreter.stack).toEqual([])
   })
 
-  test('==: should print the top element of the stack in a human-readable format', () => {
+  test('== should print the top element of the stack in a human-readable format', () => {
     const interpreter = new PostScriptInterpreter()
     let output = ''
     interpreter.outputCallback = (text) => (output += text) // Mock printing
