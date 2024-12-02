@@ -29,9 +29,9 @@ describe('Dictionary Operations', () => {
   test('end: should remove the top dictionary from the execution context', () => {
     const interpreter = new PostScriptInterpreter()
     interpreter.execute('5 dict begin')
-    expect(interpreter.current_scope()).toBeInstanceOf(Object)
+    expect(interpreter.current_scope()['__global__']).toBe(false)
     interpreter.execute('end')
-    expect(interpreter.current_scope()).not.toBeInstanceOf(Object)
+    expect(interpreter.current_scope()['__global__']).toBe(true)
   })
 
   test('def: should define a new key-value pair in the current dictionary', () => {

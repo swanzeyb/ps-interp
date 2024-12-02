@@ -15,7 +15,8 @@ export default class PostScriptInterpreter {
     this.scoping = scoping
     this.operand_stack = new Stack()
     this.dictionary_stack = new Stack()
-    this.dictionary_stack.push({})
+    this.dictionary_stack.push({ __global__: true })
+    this.dictionary_stack.push({ __global__: true })
 
     this.register_operator('def', this.def_operation.bind(this))
     this.register_operator('add', this.add_operation.bind(this))
@@ -32,6 +33,7 @@ export default class PostScriptInterpreter {
     this.register_operator('eq', this.eq_operation.bind(this))
     this.register_operator('dict', this.dict_operation.bind(this))
     this.register_operator('begin', this.begin_operation.bind(this))
+    this.register_operator('end', this.end_operation.bind(this))
   }
 
   execute(input: string) {
@@ -141,9 +143,13 @@ export default class PostScriptInterpreter {
   }
 
   private lookup_in_dictionary(input: string) {
-    const top_dict = this.dictionary_stack.peek()
-    if (top_dict[input]) {
-      const value = top_dict[input]
+    const lookup = {
+      ...this.dictionary_stack.stack.at(0),
+      ...this.dictionary_stack.stack.at(1),
+    }
+
+    if (lookup[input]) {
+      const value = lookup[input]
 
       if (typeof value === 'function') {
         value()
@@ -171,6 +177,14 @@ export default class PostScriptInterpreter {
   ///
   /// Start: Operators
 
+  end_operation() {
+    if (this.dictionary_stack.size() >= 3) {
+      this.dictionary_stack.pop()
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
+
   begin_operation() {
     if (this.operand_stack.size() >= 1) {
       const dict = this.operand_stack.pop()
@@ -192,7 +206,7 @@ export default class PostScriptInterpreter {
         return
       }
 
-      this.operand_stack.push({})
+      this.operand_stack.push({ __global__: false })
     } else {
       console.log('Not enough operands.')
     }
