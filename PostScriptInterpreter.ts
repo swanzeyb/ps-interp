@@ -10,7 +10,7 @@ export default class PostScriptInterpreter {
   ///
 
   constructor(
-    { scoping }: { scoping: 'dynamic' | 'static' } = { scoping: 'static' }
+    { scoping }: { scoping: 'dynamic' | 'static' } = { scoping: 'dynamic' }
   ) {
     this.scoping = scoping
     this.operand_stack = new Stack()
