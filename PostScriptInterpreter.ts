@@ -28,6 +28,7 @@ export default class PostScriptInterpreter {
     this.register_operator('and', this.and_operation.bind(this))
     this.register_operator('lt', this.lt_operation.bind(this))
     this.register_operator('gt', this.gt_operation.bind(this))
+    this.register_operator('ne', this.ne_operation.bind(this))
   }
 
   execute(input: string) {
@@ -156,6 +157,16 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  ne_operation() {
+    if (this.operand_stack.size() >= 2) {
+      const op1 = this.operand_stack.pop()
+      const op2 = this.operand_stack.pop()
+      this.operand_stack.push(op1 !== op2)
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
 
   gt_operation() {
     if (this.operand_stack.size() >= 2) {
