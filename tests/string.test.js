@@ -13,7 +13,7 @@ describe('String Operations', () => {
     const interpreter = new PostScriptInterpreter()
     interpreter.stack = ['hello', 1]
     interpreter.execute('get')
-    expect(interpreter.stack).toEqual(['e'.charCodeAt(0)]) // PostScript uses char codes
+    expect(interpreter.stack).toEqual(['e'])
   })
 
   test('getinterval: should push a substring onto the stack', () => {

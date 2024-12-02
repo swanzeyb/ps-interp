@@ -49,6 +49,7 @@ export default class PostScriptInterpreter {
     this.register_operator('clear', this.clear_operation.bind(this))
     this.register_operator('copy', this.copy_operation.bind(this))
     this.register_operator('count', this.count_operation.bind(this))
+    this.register_operator('get', this.get_operator.bind(this))
   }
 
   execute(input: string) {
@@ -248,6 +249,21 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  get_operator() {
+    if (this.operand_stack.size() >= 2) {
+      const index = this.operand_stack.pop()
+      const str = this.operand_stack.pop()
+
+      if (typeof str === 'string' && typeof index === 'number') {
+        this.operand_stack.push(str.at(index))
+      } else {
+        console.log('Invalid operand.')
+      }
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
 
   count_operation() {
     this.operand_stack.push(this.operand_stack.size())
