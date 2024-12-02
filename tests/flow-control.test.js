@@ -34,7 +34,7 @@ describe('Flow Control Operations', () => {
     const interpreter = new PostScriptInterpreter()
     interpreter.stack = [1, 1, 3, 'dup']
     interpreter.execute('for')
-    expect(interpreter.stack).toEqual([1, 2, 3])
+    expect(interpreter.stack).toEqual([1, 1, 2, 2, 3, 3])
   })
 
   test('repeat: should execute the block a specified number of times', () => {

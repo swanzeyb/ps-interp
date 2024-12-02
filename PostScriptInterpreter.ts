@@ -39,6 +39,7 @@ export default class PostScriptInterpreter {
     this.register_operator('if', this.if_operation.bind(this))
     this.register_operator('ifelse', this.if_else_operation.bind(this))
     this.register_operator('dup', this.dup_operation.bind(this))
+    this.register_operator('for', this.for_operation.bind(this))
   }
 
   execute(input: string) {
@@ -197,6 +198,22 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  for_operation() {
+    if (this.operand_stack.size() >= 4) {
+      const code_block = this.operand_stack.pop()
+      const end = this.operand_stack.pop()
+      const increment = this.operand_stack.pop()
+      const start = this.operand_stack.pop()
+
+      for (let i = start; i <= end; i += increment) {
+        this.operand_stack.push(i)
+        this.execute(code_block)
+      }
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
 
   dup_operation() {
     if (this.operand_stack.size() >= 1) {
