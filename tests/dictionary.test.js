@@ -6,7 +6,8 @@ describe('Dictionary Operations', () => {
     const interpreter = new PostScriptInterpreter()
     interpreter.stack = [5]
     interpreter.execute('dict')
-    expect(interpreter.stack).toEqual([{}])
+    expect(typeof interpreter.stack.at(0)).toEqual('object')
+    expect(interpreter.stack.at(0)['__global__']).toEqual(false)
   })
 
   test('length: should push the number of entries in the dictionary', () => {
