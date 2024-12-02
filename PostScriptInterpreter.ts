@@ -48,6 +48,7 @@ export default class PostScriptInterpreter {
     this.register_operator('pop', this.pop_operation.bind(this))
     this.register_operator('clear', this.clear_operation.bind(this))
     this.register_operator('copy', this.copy_operation.bind(this))
+    this.register_operator('count', this.count_operation.bind(this))
   }
 
   execute(input: string) {
@@ -247,6 +248,10 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  count_operation() {
+    this.operand_stack.push(this.operand_stack.size())
+  }
 
   copy_operation() {
     if (this.operand_stack.size() >= 2) {
