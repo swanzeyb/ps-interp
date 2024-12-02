@@ -1,9 +1,9 @@
 import Stack from './Stack'
 
 export default class PostScriptInterpreter {
-  private scoping: 'dynamic' | 'static'
-  private operand_stack: Stack
-  private dictionary_stack: Stack
+  public scoping: 'dynamic' | 'static'
+  public operand_stack: Stack
+  public dictionary_stack: Stack
 
   ///
   /// Start: Public API
@@ -17,8 +17,8 @@ export default class PostScriptInterpreter {
     this.dictionary_stack = new Stack()
     this.dictionary_stack.push({})
 
-    this.register_operator('add', this.add_operation)
-    this.register_operator('def', this.def_operation)
+    this.register_operator('add', () => this.add_operation())
+    this.register_operator('def', () => this.def_operation())
   }
 
   execute(input: string) {
@@ -147,6 +147,7 @@ export default class PostScriptInterpreter {
   /// Start: Operators
 
   add_operation() {
+    console.log(this)
     if (this.operand_stack.size() >= 2) {
       const op1 = this.operand_stack.pop()
       const op2 = this.operand_stack.pop()
