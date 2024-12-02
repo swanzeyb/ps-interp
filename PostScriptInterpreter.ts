@@ -16,9 +16,9 @@ export default class PostScriptInterpreter {
     this.scoping = scoping
     this.operand_stack = new Stack()
     this.dictionary_stack = new Stack()
-    this.dictionary_stack.push({ __global__: true })
-    this.dictionary_stack.push({ __global__: true })
 
+    // Operator dictionary
+    this.dictionary_stack.push({ __global__: true })
     this.register_operator('def', this.def_operation.bind(this))
     this.register_operator('add', this.add_operation.bind(this))
     this.register_operator('sub', this.sub_operation.bind(this))
@@ -52,6 +52,9 @@ export default class PostScriptInterpreter {
     this.register_operator('get', this.get_operator.bind(this))
     this.register_operator('getinterval', this.getinterval_operation.bind(this))
     this.register_operator('putinterval', this.putinterval_operation.bind(this))
+
+    // Global dictionary
+    this.dictionary_stack.push({ __global__: true })
   }
 
   execute(input: string) {
@@ -207,7 +210,7 @@ export default class PostScriptInterpreter {
   private lookup_in_dictionary(input: string) {
     const lookup = {
       ...this.dictionary_stack.stack.at(0),
-      ...this.dictionary_stack.stack.at(1),
+      ...this.dictionary_stack.stack.at(-1),
     }
 
     if (lookup[input]) {

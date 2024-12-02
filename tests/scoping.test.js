@@ -4,7 +4,7 @@ import PostScriptInterpreter from '../PostScriptInterpreter'
 describe('Scoping Operations', () => {
   test('Dynamic scoping: should resolve variables in the most recent scope', () => {
     const interpreter = new PostScriptInterpreter({ scoping: 'dynamic' })
-    interpreter.execute('10 /x def 5 dict begin 20 /x def x')
+    interpreter.execute('/x 10 def 5 dict begin /x 20 def x')
     expect(interpreter.stack).toEqual([20])
   })
 
