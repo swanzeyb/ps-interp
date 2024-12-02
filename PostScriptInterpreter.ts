@@ -34,6 +34,7 @@ export default class PostScriptInterpreter {
     this.register_operator('dict', this.dict_operation.bind(this))
     this.register_operator('begin', this.begin_operation.bind(this))
     this.register_operator('end', this.end_operation.bind(this))
+    this.register_operator('length', this.length_operation.bind(this))
   }
 
   execute(input: string) {
@@ -176,6 +177,21 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  length_operation() {
+    if (this.operand_stack.size() >= 1) {
+      const value = this.operand_stack.pop()
+      if (typeof value === 'string') {
+        this.operand_stack.push(value.length)
+      } else if (typeof value === 'object') {
+        this.operand_stack.push(Object.keys(value).length - 1)
+      } else {
+        console.log('Invalid operand.')
+      }
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
 
   end_operation() {
     if (this.dictionary_stack.size() >= 3) {

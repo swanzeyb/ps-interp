@@ -12,9 +12,7 @@ describe('Dictionary Operations', () => {
 
   test('length: should push the number of entries in the dictionary', () => {
     const interpreter = new PostScriptInterpreter()
-    interpreter.stack = [{}]
-    interpreter.execute('/key value def')
-    interpreter.execute('/anotherKey anotherValue def')
+    interpreter.stack = [{ __global__: false, x: 42, y: 43 }]
     interpreter.execute('length')
     expect(interpreter.stack).toEqual([2])
   })
