@@ -17,8 +17,8 @@ export default class PostScriptInterpreter {
     this.dictionary_stack = new Stack()
     this.dictionary_stack.push({})
 
-    this.register_operator('add', () => this.add_operation())
-    this.register_operator('def', () => this.def_operation())
+    this.register_operator('add', this.add_operation.bind(this))
+    this.register_operator('def', this.def_operation.bind(this))
   }
 
   execute(input: string) {
