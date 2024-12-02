@@ -7,7 +7,7 @@
       "name": "Debug Bun",
 
       // The path to a JavaScript or TypeScript file to run.
-      "program": "${workspaceFolder}/index.ts",
+      "program": "index.ts",
 
       // The arguments to pass to the program, if any.
       "args": [],
@@ -33,11 +33,11 @@
       "noDebug": false,
 
       // The path to the `bun` executable, defaults to your `PATH` environment variable.
-      "runtime": "/home/corefinder/.bun/bin/bun",
+      "runtime": "/opt/homebrew/bin/bun",
 
       // The arguments to pass to the `bun` executable, if any.
       // Unlike `args`, these are passed to the executable itself, not the program.
-      "runtimeArgs": []
+      "runtimeArgs": ["--inspect=ws://localhost:6499/ehzo4623j7"]
     },
     {
       "type": "bun",
@@ -46,7 +46,7 @@
 
       // The URL of the WebSocket inspector to attach to.
       // This value can be retrieved by using `bun --inspect`.
-      "url": "ws://localhost:6499/"
+      "url": "ws://localhost:6499/ehzo4623j7"
     }
   ]
 }
