@@ -40,6 +40,7 @@ export default class PostScriptInterpreter {
     this.register_operator('ifelse', this.if_else_operation.bind(this))
     this.register_operator('dup', this.dup_operation.bind(this))
     this.register_operator('for', this.for_operation.bind(this))
+    this.register_operator('repeat', this.repeat_operation.bind(this))
   }
 
   execute(input: string) {
@@ -198,6 +199,19 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  repeat_operation() {
+    if (this.operand_stack.size() >= 2) {
+      const code_block = this.operand_stack.pop()
+      const count = this.operand_stack.pop()
+
+      for (let i = 0; i < count; i++) {
+        this.execute(code_block)
+      }
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
 
   for_operation() {
     if (this.operand_stack.size() >= 4) {
