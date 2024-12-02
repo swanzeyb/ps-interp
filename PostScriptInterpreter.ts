@@ -1,4 +1,5 @@
 import Stack from './Stack'
+import TokenStream from './TokenStream'
 
 export default class PostScriptInterpreter {
   public scoping: 'dynamic' | 'static'
@@ -35,19 +36,12 @@ export default class PostScriptInterpreter {
     this.register_operator('begin', this.begin_operation.bind(this))
     this.register_operator('end', this.end_operation.bind(this))
     this.register_operator('length', this.length_operation.bind(this))
+    this.register_operator('if', this.if_operation.bind(this))
   }
 
   execute(input: string) {
-    if (this.scoping === 'dynamic') {
-      // dynamic scoping
-    } else {
-      // static scoping
-    }
-
     if (input !== '') {
-      for (const word of input.split(' ')) {
-        this.process_input(word)
-      }
+      this.process_input(new TokenStream(input.trim().split(' ')))
     }
   }
 
@@ -79,11 +73,7 @@ export default class PostScriptInterpreter {
       }
 
       // Process input
-      if (normal !== '') {
-        for (const word of normal.split(' ')) {
-          this.process_input(word)
-        }
-      }
+      this.execute(normal)
 
       // Debug print stack
       this.operand_stack.print()
@@ -98,43 +88,66 @@ export default class PostScriptInterpreter {
   ///
   /// Start: Private API
 
-  private process_boolean(value: string) {
-    if (value === 'true') {
+  private process_boolean(value: TokenStream) {
+    if (value.peek() === 'true') {
+      value.advance()
       return [true, true]
-    } else if (value === 'false') {
+    } else if (value.peek() === 'false') {
+      value.advance()
       return [true, false]
     } else {
       return false
     }
   }
 
-  private process_number(value: string) {
-    const result = Number(value)
+  private process_number(value: TokenStream) {
+    const result = Number(value.peek())
     if (isNaN(result)) {
       return false
     } else {
+      value.advance()
       return [true, result]
     }
   }
 
-  private process_code_block(value: string) {
-    if (value.length >= 2 && value.at(0) === '{' && value.at(-1) === '}') {
-      // broken, probably should push the stuff inside of value.slice
-      return [true, value.slice(1, -1)]
+  private process_code_block(value: TokenStream) {
+    if (value.peek() === '{') {
+      // Capture the code block as string
+      let block = ''
+      let lhs = 0
+      let rhs = 0
+
+      for (const token of value.next()) {
+        block += token + ' '
+        if (token === '{') {
+          lhs++
+        } else if (token === '}') {
+          rhs++
+        }
+
+        if (lhs === rhs) {
+          break
+        }
+      }
+
+      // Exclude outer brackets so next execution can process it
+      block = block.trim().slice(1, -1).trim()
+
+      return [true, block]
     } else {
       return false
     }
   }
 
-  private process_name_constant(value: string) {
-    if (value.at(0) === '/') {
-      return [true, value]
+  private process_name_constant(value: TokenStream) {
+    if (value.peek() === '/') {
+      return [true, value.advance()]
     } else {
       return false
     }
   }
 
-  private process_constants(input: string) {
+  private process_constants(input: TokenStream) {
     return (
       this.process_boolean(input) ||
       this.process_number(input) ||
@@ -160,12 +173,17 @@ export default class PostScriptInterpreter {
     }
   }
 
-  private process_input(input: string) {
+  private process_input(input: TokenStream) {
     const result = this.process_constants(input)
     if (result) {
       this.operand_stack.push(result[1])
     } else {
-      this.lookup_in_dictionary(input)
+      this.lookup_in_dictionary(input.advance())
+    }
+
+    // Continue processing tokens
+    if (!input.eof()) {
+      this.process_input(input)
     }
   }
 
@@ -177,6 +195,19 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  if_operation() {
+    if (this.operand_stack.size() >= 2) {
+      const code_block = this.operand_stack.pop()
+      const condition = this.operand_stack.pop()
+
+      if (condition) {
+        this.execute(code_block)
+      }
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
 
   length_operation() {
     if (this.operand_stack.size() >= 1) {

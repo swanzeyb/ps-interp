@@ -4,8 +4,7 @@ import PostScriptInterpreter from '../PostScriptInterpreter'
 describe('Flow Control Operations', () => {
   test('if: should execute the block if the condition is true', () => {
     const interpreter = new PostScriptInterpreter()
-    interpreter.stack = [true, '{2 3 add}']
-    interpreter.execute('if')
+    interpreter.execute('true { 2 3 add } if')
     expect(interpreter.stack).toEqual([5])
   })
 
