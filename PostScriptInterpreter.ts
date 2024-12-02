@@ -40,7 +40,11 @@ export default class PostScriptInterpreter {
       // static scoping
     }
 
-    this.process_input(input)
+    if (input !== '') {
+      for (const word of input.split(' ')) {
+        this.process_input(word)
+      }
+    }
   }
 
   set stack(stack: any[]) {
