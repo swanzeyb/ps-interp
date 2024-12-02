@@ -30,6 +30,7 @@ export default class PostScriptInterpreter {
     this.register_operator('gt', this.gt_operation.bind(this))
     this.register_operator('ne', this.ne_operation.bind(this))
     this.register_operator('eq', this.eq_operation.bind(this))
+    this.register_operator('dict', this.dict_operation.bind(this))
   }
 
   execute(input: string) {
@@ -71,7 +72,9 @@ export default class PostScriptInterpreter {
 
       // Process input
       if (normal !== '') {
-        this.process_input(normal)
+        for (const word of normal.split(' ')) {
+          this.process_input(word)
+        }
       }
 
       // Debug print stack
@@ -162,6 +165,20 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  dict_operation() {
+    if (this.operand_stack.size() >= 1) {
+      const count = this.operand_stack.pop()
+      if (typeof count !== 'number') {
+        console.log('Invalid operand.')
+        return
+      }
+
+      this.operand_stack.push({})
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
 
   eq_operation() {
     if (this.operand_stack.size() >= 2) {
