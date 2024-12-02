@@ -17,8 +17,9 @@ export default class PostScriptInterpreter {
     this.dictionary_stack = new Stack()
     this.dictionary_stack.push({})
 
-    this.register_operator('add', this.add_operation.bind(this))
     this.register_operator('def', this.def_operation.bind(this))
+    this.register_operator('add', this.add_operation.bind(this))
+    this.register_operator('sub', this.sub_operation.bind(this))
   }
 
   execute(input: string) {
@@ -149,11 +150,21 @@ export default class PostScriptInterpreter {
   /// Start: Operators
 
   add_operation() {
-    console.log(this)
     if (this.operand_stack.size() >= 2) {
       const op1 = this.operand_stack.pop()
       const op2 = this.operand_stack.pop()
       const result = op1 + op2
+      this.operand_stack.push(result)
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
+
+  sub_operation() {
+    if (this.operand_stack.size() >= 2) {
+      const op1 = this.operand_stack.pop()
+      const op2 = this.operand_stack.pop()
+      const result = op2 - op1
       this.operand_stack.push(result)
     } else {
       console.log('Not enough operands.')
