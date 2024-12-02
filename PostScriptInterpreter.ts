@@ -24,6 +24,7 @@ export default class PostScriptInterpreter {
     this.register_operator('div', this.div_operation.bind(this))
     this.register_operator('mod', this.mod_operation.bind(this))
     this.register_operator('not', this.not_operation.bind(this))
+    this.register_operator('or', this.or_operation.bind(this))
   }
 
   execute(input: string) {
@@ -152,6 +153,16 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  or_operation() {
+    if (this.operand_stack.size() >= 2) {
+      const op1 = this.operand_stack.pop()
+      const op2 = this.operand_stack.pop()
+      this.operand_stack.push(op1 || op2)
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
 
   not_operation() {
     if (this.operand_stack.size() >= 1) {
