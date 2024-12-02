@@ -47,6 +47,7 @@ export default class PostScriptInterpreter {
     this.register_operator('exch', this.exch_operation.bind(this))
     this.register_operator('pop', this.pop_operation.bind(this))
     this.register_operator('clear', this.clear_operation.bind(this))
+    this.register_operator('copy', this.copy_operation.bind(this))
   }
 
   execute(input: string) {
@@ -246,6 +247,17 @@ export default class PostScriptInterpreter {
   /// End: Private API
   ///
   /// Start: Operators
+
+  copy_operation() {
+    if (this.operand_stack.size() >= 2) {
+      const count = this.operand_stack.pop()
+      for (let i = 0; i < count; i++) {
+        this.operand_stack.push(this.operand_stack.stack.at(i))
+      }
+    } else {
+      console.log('Not enough operands.')
+    }
+  }
 
   clear_operation() {
     this.operand_stack.stack = []
