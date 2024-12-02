@@ -55,7 +55,9 @@ export default class PostScriptInterpreter {
       }
 
       // Process input
-      this.process_input(normal)
+      if (normal !== '') {
+        this.process_input(normal)
+      }
 
       // Debug print stack
       this.operand_stack.print()
