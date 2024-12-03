@@ -54,6 +54,14 @@ export default class PostScriptInterpreter {
     this.register_operator('get', this.get_operator.bind(this))
     this.register_operator('getinterval', this.getinterval_operation.bind(this))
     this.register_operator('putinterval', this.putinterval_operation.bind(this))
+    this.register_operator('use-dynamic', () => {
+      this.set_scoping('dynamic')
+      console.log('Dynamic scoping enabled.')
+    })
+    this.register_operator('use-static', () => {
+      this.set_scoping('static')
+      console.log('Static scoping enabled.')
+    })
 
     // Global dictionary
     this.dictionary_stack.push({
