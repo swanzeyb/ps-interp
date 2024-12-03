@@ -13,6 +13,7 @@
   },
   "scripts": {
     "repl": "bun index.ts",
+    "repl-static": "bun index.ts --static",
     "test": "bun test"
   }
 }
