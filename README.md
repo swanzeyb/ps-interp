@@ -1,5 +1,17 @@
 # ps-interp
 
+## DEMO
+
+## Images
+
+### repl
+
+![repl](repl.png)
+
+### tests
+
+![repl](test.png)
+
 ## Where to start
 
 1. Check that you have NPM installed.
