@@ -12,6 +12,20 @@
 
 ![repl](test.png)
 
+## Commands
+
+> Switch to Dynamic scoping
+
+```bash
+use-dynamic
+```
+
+> Switch to Static scoping
+
+```bash
+use-Static
+```
+
 ## Where to start
 
 1. Check that you have NPM installed.
