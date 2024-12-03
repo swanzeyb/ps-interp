@@ -19,24 +19,24 @@ describe('Dictionary Operations', () => {
 
   test('begin: should push a dictionary to the execution context', () => {
     const interpreter = new PostScriptInterpreter()
-    const new_dict = {}
+    const new_dict = { __global__: false }
     interpreter.operand_stack.stack = [new_dict]
     interpreter.execute('begin')
-    expect(interpreter.current_dictionary).toBe(new_dict)
+    expect(interpreter.dictionary_stack.peek()).toBe(new_dict)
   })
 
   test('end: should remove the top dictionary from the execution context', () => {
     const interpreter = new PostScriptInterpreter()
     interpreter.execute('5 dict begin')
-    expect(interpreter.current_dictionary['__global__']).toBe(false)
+    expect(interpreter.dictionary_stack.peek()['__global__']).toBe(false)
     interpreter.execute('end')
-    expect(interpreter.current_dictionary['__global__']).toBe(true)
+    expect(interpreter.dictionary_stack.peek()['__global__']).toBe(true)
   })
 
   test('def: should define a new key-value pair in the current dictionary', () => {
     const interpreter = new PostScriptInterpreter()
     interpreter.execute('/key 42 def')
     interpreter.execute('/key 42 def')
-    expect(interpreter.current_dictionary['key']).toEqual(42)
+    expect(interpreter.dictionary_stack.peek()['key']).toEqual(42)
   })
 })
