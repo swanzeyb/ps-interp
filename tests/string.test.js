@@ -4,29 +4,29 @@ import PostScriptInterpreter from '../PostScriptInterpreter'
 describe('String Operations', () => {
   test('length: should push the length of a string onto the stack', () => {
     const interpreter = new PostScriptInterpreter()
-    interpreter.stack = ['(hello)']
+    interpreter.operand_stack.stack = ['(hello)']
     interpreter.execute('length')
-    expect(interpreter.stack).toEqual([5])
+    expect(interpreter.operand_stack.stack).toEqual([5])
   })
 
   test('get: should push the character at the specified index onto the stack', () => {
     const interpreter = new PostScriptInterpreter()
-    interpreter.stack = ['(hello)', 1]
+    interpreter.operand_stack.stack = ['(hello)', 1]
     interpreter.execute('get')
-    expect(interpreter.stack).toEqual(['(e)'])
+    expect(interpreter.operand_stack.stack).toEqual(['(e)'])
   })
 
   test('getinterval: should push a substring onto the stack', () => {
     const interpreter = new PostScriptInterpreter()
-    interpreter.stack = ['(hello)', 1, 3]
+    interpreter.operand_stack.stack = ['(hello)', 1, 3]
     interpreter.execute('getinterval')
-    expect(interpreter.stack).toEqual(['(ell)'])
+    expect(interpreter.operand_stack.stack).toEqual(['(ell)'])
   })
 
   test('putinterval: should replace a substring in the original string', () => {
     const interpreter = new PostScriptInterpreter()
-    interpreter.stack = ['(hello)', 1, '(abc)']
+    interpreter.operand_stack.stack = ['(hello)', 1, '(abc)']
     interpreter.execute('putinterval')
-    expect(interpreter.stack).toEqual(['(habco)'])
+    expect(interpreter.operand_stack.stack).toEqual(['(habco)'])
   })
 })

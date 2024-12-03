@@ -66,14 +66,6 @@ export default class PostScriptInterpreter {
     }
   }
 
-  set stack(stack: any[]) {
-    this.operand_stack.stack = stack
-  }
-
-  get stack() {
-    return this.operand_stack.stack
-  }
-
   set_scoping(scoping: 'dynamic' | 'static') {
     this.scoping = scoping
   }

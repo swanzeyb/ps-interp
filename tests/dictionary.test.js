@@ -4,23 +4,23 @@ import PostScriptInterpreter from '../PostScriptInterpreter'
 describe('Dictionary Operations', () => {
   test('dict: should create a new dictionary with a specified size', () => {
     const interpreter = new PostScriptInterpreter()
-    interpreter.stack = [5]
+    interpreter.operand_stack.stack = [5]
     interpreter.execute('dict')
-    expect(typeof interpreter.stack.at(0)).toEqual('object')
-    expect(interpreter.stack.at(0)['__global__']).toEqual(false)
+    expect(typeof interpreter.operand_stack.stack.at(0)).toEqual('object')
+    expect(interpreter.operand_stack.stack.at(0)['__global__']).toEqual(false)
   })
 
   test('length: should push the number of entries in the dictionary', () => {
     const interpreter = new PostScriptInterpreter()
-    interpreter.stack = [{ __global__: false, x: 42, y: 43 }]
+    interpreter.operand_stack.stack = [{ __global__: false, x: 42, y: 43 }]
     interpreter.execute('length')
-    expect(interpreter.stack).toEqual([2])
+    expect(interpreter.operand_stack.stack).toEqual([2])
   })
 
   test('begin: should push a dictionary to the execution context', () => {
     const interpreter = new PostScriptInterpreter()
     const new_dict = {}
-    interpreter.stack = [new_dict]
+    interpreter.operand_stack.stack = [new_dict]
     interpreter.execute('begin')
     expect(interpreter.current_scope()).toBe(new_dict)
   })
