@@ -1,5 +1,6 @@
 import Stack from './Stack'
 import TokenStream from './TokenStream'
+import CodeBlock from './CodeBlock'
 
 export default class PostScriptInterpreter {
   public scoping: 'dynamic' | 'static'
@@ -150,6 +151,9 @@ export default class PostScriptInterpreter {
             break
           }
         }
+        if (lhs === rhs) {
+          break
+        }
         str += ' '
       }
       str = str.trim()
@@ -159,7 +163,6 @@ export default class PostScriptInterpreter {
       return false
     }
   }
-
   private process_code_block(value: TokenStream) {
     if (value.peek().at(0) === '{') {
       // Capture the code block as string
@@ -181,11 +184,19 @@ export default class PostScriptInterpreter {
             break
           }
         }
+        if (lhs === rhs) {
+          break
+        }
         block += ' '
       }
       block = block.trim()
 
-      return [true, block]
+      // Create a CodeBlock with the code and the current lexical environment
+      const codeBlock = new CodeBlock(
+        this.strip_enclosure(block, '{', '}'),
+        this.current_dictionary
+      )
+      return [true, codeBlock]
     } else {
       return false
     }
@@ -209,9 +220,25 @@ export default class PostScriptInterpreter {
     )
   }
 
-  private execute_value(value: Function | string) {
+  private execute_code_block(codeBlock: CodeBlock) {
+    // Save the current lexical environment
+    const previous_dictionary = this.current_dictionary
+
+    // Set the current_dictionary to the code block's lexical environment
+    this.current_dictionary = codeBlock.lexical_env
+
+    // Execute the code block
+    this.process_input(new TokenStream(codeBlock.code.trim().split(' ')))
+
+    // Restore the previous lexical environment
+    this.current_dictionary = previous_dictionary
+  }
+
+  private execute_value(value: Function | string | CodeBlock) {
     if (typeof value === 'function') {
       value()
+    } else if (value instanceof CodeBlock) {
+      this.execute_code_block(value)
     } else {
       this.operand_stack.push(value)
     }
@@ -246,28 +273,14 @@ export default class PostScriptInterpreter {
   }
 
   private process_input(input: TokenStream) {
-    console.log('~~~ INPUT ~~~', input.peek())
-    const result = this.process_constants(input)
-    if (result) {
-      this.operand_stack.push(result[1])
-    } else {
-      this.lookup_in_dictionary(input.advance())
-    }
-    console.log(
-      '~~~ RESULT ~~~',
-      JSON.stringify(
-        {
-          stack: this.operand_stack.stack,
-          dictionary: this.current_dictionary,
-        },
-        null,
-        2
-      )
-    )
-
-    // Continue processing tokens
-    if (!input.eof()) {
-      this.process_input(input)
+    while (!input.eof()) {
+      const result = this.process_constants(input)
+      if (result) {
+        this.operand_stack.push(result[1])
+      } else {
+        const token = input.advance()
+        this.lookup_in_dictionary(token)
+      }
     }
   }
 
