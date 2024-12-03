@@ -6,7 +6,7 @@ export default class PostScriptInterpreter {
   public scoping: 'dynamic' | 'static'
   public operand_stack: Stack
   public dictionary_stack: Stack
-  private current_dictionary: { [key: string]: any }
+  public current_dictionary: { [key: string]: any }
 
   ///
   /// Start: Public API
@@ -68,10 +68,6 @@ export default class PostScriptInterpreter {
 
   set_scoping(scoping: 'dynamic' | 'static') {
     this.scoping = scoping
-  }
-
-  current_scope() {
-    return this.current_dictionary
   }
 
   async repl() {

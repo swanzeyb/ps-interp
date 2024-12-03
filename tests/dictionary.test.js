@@ -22,21 +22,21 @@ describe('Dictionary Operations', () => {
     const new_dict = {}
     interpreter.operand_stack.stack = [new_dict]
     interpreter.execute('begin')
-    expect(interpreter.current_scope()).toBe(new_dict)
+    expect(interpreter.current_dictionary).toBe(new_dict)
   })
 
   test('end: should remove the top dictionary from the execution context', () => {
     const interpreter = new PostScriptInterpreter()
     interpreter.execute('5 dict begin')
-    expect(interpreter.current_scope()['__global__']).toBe(false)
+    expect(interpreter.current_dictionary['__global__']).toBe(false)
     interpreter.execute('end')
-    expect(interpreter.current_scope()['__global__']).toBe(true)
+    expect(interpreter.current_dictionary['__global__']).toBe(true)
   })
 
   test('def: should define a new key-value pair in the current dictionary', () => {
     const interpreter = new PostScriptInterpreter()
     interpreter.execute('/key 42 def')
     interpreter.execute('/key 42 def')
-    expect(interpreter.current_scope()['key']).toEqual(42)
+    expect(interpreter.current_dictionary['key']).toEqual(42)
   })
 })
