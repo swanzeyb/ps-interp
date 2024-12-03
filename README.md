@@ -31,8 +31,16 @@ npm i
 
 ### Run REPL
 
+> Run w/ Dynamic Scoping
+
 ```bash
 npm run repl
+```
+
+> Run w/ Static Scoping
+
+```bash
+npm run repl-static
 ```
 
 ### Run ALL tests
