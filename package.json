@@ -12,7 +12,7 @@
     "bun": "^1.1.38"
   },
   "scripts": {
-    "repl": "bun --watch index.ts",
-    "test": "bun --test"
+    "repl": "bun index.ts",
+    "test": "bun test"
   }
 }
