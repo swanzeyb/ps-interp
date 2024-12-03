@@ -5,6 +5,7 @@ export default class PostScriptInterpreter {
   public scoping: 'dynamic' | 'static'
   public operand_stack: Stack
   public dictionary_stack: Stack
+  private current_dictionary: { [key: string]: any }
 
   ///
   /// Start: Public API
@@ -55,6 +56,7 @@ export default class PostScriptInterpreter {
 
     // Global dictionary
     this.dictionary_stack.push({ __global__: true })
+    this.current_dictionary = this.dictionary_stack.peek()
   }
 
   execute(input: string) {
@@ -76,7 +78,7 @@ export default class PostScriptInterpreter {
   }
 
   current_scope() {
-    return this.dictionary_stack.peek()
+    return this.current_dictionary
   }
 
   async repl() {
@@ -207,30 +209,61 @@ export default class PostScriptInterpreter {
     )
   }
 
-  private lookup_in_dictionary(input: string) {
-    const lookup = {
-      ...this.dictionary_stack.stack.at(0),
-      ...this.dictionary_stack.stack.at(-1),
+  private execute_value(value: Function | string) {
+    if (typeof value === 'function') {
+      value()
+    } else {
+      this.operand_stack.push(value)
     }
+  }
 
-    if (lookup[input]) {
-      const value = lookup[input]
-
-      if (typeof value === 'function') {
-        value()
-      } else {
-        this.operand_stack.push(value)
+  private lookup_value(input: string) {
+    if (this.scoping === 'dynamic') {
+      // Search the dictionary stack top-down
+      for (const dictionary of [...this.dictionary_stack.stack].reverse()) {
+        if (input in dictionary) {
+          return dictionary[input]
+        }
+      }
+    } else if (this.scoping === 'static') {
+      // Only search the current lexical dictionary
+      let dict = this.current_dictionary
+      while (dict) {
+        if (input in dict) {
+          return dict[input]
+        }
+        // Move to the parent dictionary if available
+        dict = dict.__parent__
       }
     }
   }
 
+  private lookup_in_dictionary(input: string) {
+    const value = this.lookup_value(input)
+    if (value) {
+      this.execute_value(value)
+    }
+  }
+
   private process_input(input: TokenStream) {
+    console.log('~~~ INPUT ~~~', input.peek())
     const result = this.process_constants(input)
     if (result) {
       this.operand_stack.push(result[1])
     } else {
       this.lookup_in_dictionary(input.advance())
     }
+    console.log(
+      '~~~ RESULT ~~~',
+      JSON.stringify(
+        {
+          stack: this.operand_stack.stack,
+          dictionary: this.current_dictionary,
+        },
+        null,
+        2
+      )
+    )
 
     // Continue processing tokens
     if (!input.eof()) {
@@ -469,6 +502,11 @@ export default class PostScriptInterpreter {
   end_operation() {
     if (this.dictionary_stack.size() >= 3) {
       this.dictionary_stack.pop()
+
+      // Update current_dictionary for static scoping
+      if (this.scoping === 'static') {
+        this.current_dictionary = this.dictionary_stack.peek()
+      }
     } else {
       console.log('Not enough operands.')
     }
@@ -479,6 +517,11 @@ export default class PostScriptInterpreter {
       const dict = this.operand_stack.pop()
       if (typeof dict === 'object') {
         this.dictionary_stack.push(dict)
+
+        // Update current_dictionary for static scoping
+        if (this.scoping === 'static') {
+          this.current_dictionary = dict
+        }
       } else {
         console.log('Invalid operand.')
       }
@@ -630,11 +673,16 @@ export default class PostScriptInterpreter {
       const value = this.operand_stack.pop()
       const name = this.operand_stack.pop()
 
-      // If name constant
+      // If name is a name constant
       if (typeof name === 'string' && name.at(0) === '/') {
         const key = name.slice(1)
-        this.dictionary_stack.peek()[key] = value
-        // Need an elseif for something here...
+        if (this.scoping === 'static') {
+          // Store in current_dictionary for static scoping
+          this.current_dictionary[key] = value
+        } else {
+          // Store in the top dictionary for dynamic scoping
+          this.dictionary_stack.peek()[key] = value
+        }
       } else {
         this.operand_stack.push(name)
         this.operand_stack.push(value)
