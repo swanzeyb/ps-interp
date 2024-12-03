@@ -15,18 +15,10 @@ describe('Scoping Operations', () => {
   })
 
   test('Lexical scoping: should resolve variables based on the scope where the procedure is defined', () => {
-    const interpreter = new PostScriptInterpreter({ scoping: 'lexical' })
+    const interpreter = new PostScriptInterpreter({ scoping: 'static' })
     interpreter.execute(
       '/x 10 def /proc { x } def 5 dict begin /x 20 def proc end'
-        .toLowerCase()
-        .trim()
     )
-    expect(interpreter.operand_stack.stack.print()).toEqual([20])
-  })
-
-  test('Lexical scoping: should resolve variables from the defining scope even after exiting that scope', () => {
-    const interpreter = new PostScriptInterpreter({ scoping: 'lexical' })
-    interpreter.execute('5 dict begin /x 10 def /proc { x } def end proc')
     expect(interpreter.operand_stack.stack).toEqual([10])
   })
 

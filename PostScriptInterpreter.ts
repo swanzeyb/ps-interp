@@ -20,7 +20,7 @@ export default class PostScriptInterpreter {
     this.dictionary_stack = new Stack()
 
     // Operator dictionary
-    this.dictionary_stack.push({ __global__: true })
+    this.dictionary_stack.push({ __global__: true, __parent__: null })
     this.register_operator('def', this.def_operation.bind(this))
     this.register_operator('add', this.add_operation.bind(this))
     this.register_operator('sub', this.sub_operation.bind(this))
@@ -56,7 +56,10 @@ export default class PostScriptInterpreter {
     this.register_operator('putinterval', this.putinterval_operation.bind(this))
 
     // Global dictionary
-    this.dictionary_stack.push({ __global__: true })
+    this.dictionary_stack.push({
+      __global__: true,
+      __parent__: this.dictionary_stack.peek(),
+    })
     this.current_dictionary = this.dictionary_stack.peek()
   }
 
@@ -180,10 +183,9 @@ export default class PostScriptInterpreter {
       block = block.trim()
 
       // Create a CodeBlock with the code and the current lexical environment
-      const codeBlock = new CodeBlock(
-        this.strip_enclosure(block, '{', '}'),
-        this.current_dictionary
-      )
+      const codeBlock = new CodeBlock(this.strip_enclosure(block, '{', '}'), {
+        ...this.current_dictionary,
+      })
       return [true, codeBlock]
     } else {
       return false
@@ -208,18 +210,22 @@ export default class PostScriptInterpreter {
     )
   }
 
-  private execute_code_block(codeBlock: CodeBlock) {
-    // Save the current lexical environment
-    const previous_dictionary = this.current_dictionary
+  private execute_code_block(code_block: CodeBlock) {
+    if (this.scoping === 'static') {
+      // Save the previous current_dictionary
+      const previous_dictionary = this.current_dictionary
+      // Set the current_dictionary to the code block's lexical environment
+      this.current_dictionary = code_block.lexical_env
 
-    // Set the current_dictionary to the code block's lexical environment
-    this.current_dictionary = codeBlock.lexical_env
+      // Execute the code block
+      this.process_input(new TokenStream(code_block.code.trim().split(' ')))
 
-    // Execute the code block
-    this.process_input(new TokenStream(codeBlock.code.trim().split(' ')))
-
-    // Restore the previous lexical environment
-    this.current_dictionary = previous_dictionary
+      // Restore the previous state
+      this.current_dictionary = previous_dictionary
+    } else {
+      // For dynamic scoping, execute in the current environment without modifying the dictionary stack
+      this.process_input(new TokenStream(code_block.code.trim().split(' ')))
+    }
   }
 
   private execute_value(value: Function | string | CodeBlock) {
@@ -500,13 +506,22 @@ export default class PostScriptInterpreter {
     }
   }
 
-  end_operation() {
-    if (this.dictionary_stack.size() >= 3) {
-      this.dictionary_stack.pop()
+  // end_operation() {
+  //   if (this.dictionary_stack.size() >= 3) {
+  //     this.dictionary_stack.pop()
+  //     // Restore the previous current_dictionary
+  //     this.current_dictionary = this.current_dictionary.__parent__
+  //   } else {
+  //     console.log('Not enough operands.')
+  //   }
+  // }
 
-      // Update current_dictionary for static scoping
+  end_operation() {
+    if (this.dictionary_stack.size() >= 1) {
       if (this.scoping === 'static') {
-        this.current_dictionary = this.dictionary_stack.peek()
+        // this.current_dictionary = this.dictionary_stack.peek()
+      } else {
+        this.dictionary_stack.pop()
       }
     } else {
       console.log('Not enough operands.')
@@ -517,11 +532,10 @@ export default class PostScriptInterpreter {
     if (this.operand_stack.size() >= 1) {
       const dict = this.operand_stack.pop()
       if (typeof dict === 'object') {
-        this.dictionary_stack.push(dict)
-
-        // Update current_dictionary for static scoping
         if (this.scoping === 'static') {
           this.current_dictionary = dict
+        } else {
+          this.dictionary_stack.push(dict)
         }
       } else {
         console.log('Invalid operand.')
@@ -531,6 +545,24 @@ export default class PostScriptInterpreter {
     }
   }
 
+  // begin_operation() {
+  //   if (this.operand_stack.size() >= 1) {
+  //     const dict = this.operand_stack.pop()
+  //     if (typeof dict === 'object') {
+  //       this.dictionary_stack.push(dict)
+
+  //       // Update current_dictionary for static scoping
+  //       if (this.scoping === 'static') {
+  //         this.current_dictionary = dict
+  //       }
+  //     } else {
+  //       console.log('Invalid operand.')
+  //     }
+  //   } else {
+  //     console.log('Not enough operands.')
+  //   }
+  // }
+
   dict_operation() {
     if (this.operand_stack.size() >= 1) {
       const count = this.operand_stack.pop()
@@ -539,7 +571,10 @@ export default class PostScriptInterpreter {
         return
       }
 
-      this.operand_stack.push({ __global__: false })
+      this.operand_stack.push({
+        __global__: false,
+        __parent__: this.current_dictionary,
+      })
     } else {
       console.log('Not enough operands.')
     }
